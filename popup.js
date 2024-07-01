@@ -1,24 +1,32 @@
 document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('send').addEventListener('click', sendCertificates);
+  document.getElementById('send').addEventListener('click', sendCertificates);
+});
+
+function sendCertificates() {
+  const attendees = [
+      { email: 'recipient1@example.com', name: 'Recipient One' },
+      { email: 'recipient2@example.com', name: 'Recipient Two' }
+      // Add more attendees here
+  ];
+  
+  attendees.forEach(attendee => {
+      const emailBody = `Congratulations ${attendee.name} on participating!`;
+      sendEmail(attendee.email, 'Certificate of Participation', emailBody);
   });
-  
-  function sendCertificates() {
-    chrome.identity.getAuthToken({ interactive: true }, function(token) {
-      // Use the token to send emails via Gmail API
-      fetch('https://www.googleapis.com/gmail/v1/users/me/messages/send', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          'raw': btoa("From: sender@example.com\nTo: recipient@example.com\nSubject: Certificate of Participation\n\nCongratulations on participating!")
-        })
-      }).then(response => {
-        console.log('Email sent successfully:', response);
-      }).catch(error => {
-        console.error('Error sending email:', error);
-      });
-    });
-  }
-  
+}
+
+function sendEmail(to, subject, body) {
+  Email.send({
+      Host: "smtp.your-email-provider.com",
+      Username: "your-email@example.com",
+      Password: "your-email-password",
+      To: to,
+      From: "your-email@example.com",
+      Subject: subject,
+      Body: body
+  }).then(
+      message => console.log('Email sent successfully:', message)
+  ).catch(
+      error => console.error('Error sending email:', error)
+  );
+}
